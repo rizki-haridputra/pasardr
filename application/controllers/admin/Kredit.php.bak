@@ -1,0 +1,101 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Kredit extends CI_Controller {
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->library('licensing');
+        $this->licensing->check_license();
+		
+		//Get Zona Waktu
+        foreach ($this->db->get('tb_aplikasi')->result() as $timezone) {
+            date_default_timezone_set($timezone->timezone);
+        }
+
+		if(!$this->session->userdata('level')){
+			$this->session->set_flashdata('pesan', 'Anda harus masuk terlebih dahulu!');
+			redirect('home');
+		}
+	}
+
+	public function index()
+	{
+		$data['title']		= 'Data Kredit';
+		$data['subtitle']	= 'Menampilkan semua data kredit';
+
+		$data['collapse']	= 'No';
+
+		$this->db->where('level', 'Nasabah');
+		$data['nasabah']	= $this->m_model->get_desc('tb_user');
+		if($this->session->userdata('level') == 'Nasabah') {
+			$this->db->where('idNasabah', $this->session->userdata('id'));
+		}
+		$data['kredit']		= $this->m_model->get_desc('tb_kredit');
+		
+		$this->load->view('admin/templates/header', $data);
+		$this->load->view('admin/templates/sidebar');
+		$this->load->view('admin/kredit');
+		$this->load->view('admin/templates/footer');
+    }
+
+	public function insert()
+	{
+		$idUserinput	= $this->session->userdata('id');
+		$idNasabah		= $_POST['idNasabah'];
+		$namaBarang		= $_POST['namaBarang'];
+		$noKredit		= date('y') . time();
+		$harga			= $_POST['harga'];
+		$status			= $_POST['status'];
+		$tanggal		= $_POST['tanggal'];
+		$terdaftar		= date('Y-m-d H:i:s');
+
+		$data = array(
+			'idUserinput' 	=> $idUserinput,
+			'idNasabah' 	=> $idNasabah,
+			'noKredit' 		=> $noKredit,
+			'namaBarang' 	=> $namaBarang,
+			'harga' 		=> $harga,
+			'tanggal' 		=> $tanggal,
+			'status' 		=> $status,
+			'terdaftar' 	=> $terdaftar
+		);
+
+		$this->m_model->insert($data, 'tb_kredit');
+		$this->session->set_flashdata('pesan', 'Data berhasil ditambahkan!');
+		redirect('admin/kredit');
+	}
+
+	public function delete($id)
+	{
+		$where = array('id' => $id);
+
+		$this->m_model->delete($where, 'tb_kredit');
+		$this->session->set_flashdata('pesan', 'Data berhasil dihapus!');
+		redirect('admin/kredit');
+	}
+
+	public function update($id)
+	{
+		$idNasabah		= $_POST['idNasabah'];
+		$namaBarang		= $_POST['namaBarang'];
+		$harga			= $_POST['harga'];
+		$status			= $_POST['status'];
+		$tanggal		= $_POST['tanggal'];
+
+		$data = array(
+			'idNasabah' 	=> $idNasabah,
+			'namaBarang' 	=> $namaBarang,
+			'harga' 		=> $harga,
+			'tanggal' 		=> $tanggal,
+			'status' 		=> $status
+		);
+
+		$where = array('id' => $id);
+
+		$this->m_model->update($where, $data, 'tb_kredit');
+		$this->session->set_flashdata('pesan', 'Data berhasil diubah!');
+		redirect('admin/kredit');
+	}
+}

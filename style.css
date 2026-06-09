@@ -1,0 +1,156 @@
+/* Menggunakan font Poppins untuk seluruh halaman */
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* --- Bagian Slider --- */
+#hero-slider .carousel-item {
+    max-height: 550px; /* Anda bisa sesuaikan nilai ini sesuai kebutuhan, misal 500px atau 600px */
+    overflow: hidden;
+}
+
+/* --- Tambahan untuk Halaman Profil --- */
+.org-card {
+    border: 1px solid #eee;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.org-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.org-card .card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
+
+#visi-misi ol {
+    padding-left: 1.2rem;
+}
+
+
+/* --- Tambahan untuk Halaman Detail Berita --- */
+.article-body {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+
+.article-body p {
+    margin-bottom: 1.5rem;
+}
+
+.article-body blockquote {
+    border-left: 4px solid #0d6efd;
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 2rem 0;
+}
+
+/* --- Tambahan untuk Halaman Daftar Berita --- */
+.news-list .card-img-top,
+.news-list .img-fluid {
+    object-fit: cover;
+}
+
+/* --- Tambahan untuk Halaman Galeri --- */
+.gallery-item a {
+    display: block;
+    overflow: hidden;
+    border-radius: 0.375rem; /* Sama dengan radius Bootstrap */
+}
+
+.gallery-item img {
+    transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+#hero-slider .carousel-item img {
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* Mencegah gambar menjadi gepeng/terdistorsi */
+    object-position: center; /* Memastikan bagian tengah gambar yang terlihat */
+}
+
+#hero-slider .carousel-caption {
+    bottom: 20%; /* Posisi teks caption */
+    background-color: rgba(0, 0, 0, 0.4); /* Latar belakang transparan untuk teks */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#hero-slider .carousel-caption h5 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* --- Judul Section --- */
+.section-title {
+    font-weight: 700;
+    color: #333;
+    position: relative;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #0d6efd; /* Warna biru primer Bootstrap */
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+}
+
+/* --- Kartu Berita --- */
+.news-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: none;
+}
+
+.news-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.news-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.news-card .card-footer {
+    padding-top: 0;
+}
+
+/* --- Footer --- */
+footer a {
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+footer a:hover {
+    color: #0d6efd !important;
+}
+
+footer .text-primary {
+    color: #0d6efd !important;
+}
+
+/* Penyesuaian untuk layar kecil (Mobile) */
+@media (max-width: 768px) {
+    #hero-slider .carousel-item {
+        height: 50vh;
+    }
+
+    #hero-slider .carousel-caption h5 {
+        font-size: 1.8rem;
+    }
+}

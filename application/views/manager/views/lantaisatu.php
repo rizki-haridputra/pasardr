@@ -1,0 +1,247 @@
+/** 1. DIUBAH: Fungsi render_kios untuk menambahkan atribut data-* **/
+function render_kios($kios) {
+    echo '<div class="kios ' . htmlspecialchars($kios['status']) . '" 
+               data-id="' . htmlspecialchars($kios['id']) . '" 
+               data-status="' . htmlspecialchars($kios['status']) . '"
+               title="Kios ' . htmlspecialchars($kios['id']) . ' - Klik untuk detail">' 
+               . htmlspecialchars($kios['id']) . 
+         '</div>';
+}
+
+// Fungsi render blok inti (tidak berubah)
+function render_blok_inti($data_grup) {
+    foreach ($data_grup as $kolom_data) {
+        echo '<div class="kolom-kios-inti">';
+        foreach ($kolom_data as $kios) {
+            render_kios($kios);
+        }
+        echo '</div>';
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <?= $title ?? 'Judul Halaman' ?>
+            <small><?= $subtitle ?? 'Sub Judul' ?></small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="<?= base_url('manager/views/dashboard') ?>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active"><?= $title ?? 'Judul Halaman' ?></li>
+        </ol>
+    </section>
+    <head>
+    <!-- Main content -->
+    <section class="content">
+        <div class="box">
+            <div class="box-body">
+                <!-- Tombol Navigasi manager/views -->
+                <?php if ($this->session->userdata('level') == 'manager') : ?>
+                    <div class="box-body">
+                <?php if($this->session->userdata('level') == 'manager') { ?>
+                    	<a href="<?= base_url('manager/views/kios') ?>" class="btn btn-app">
+                        <span class="badge bg-<?= $this->session->userdata('skin') ?>"><?= $this->db->get('tb_kios')->num_rows() ?></span>
+                        <i class="fa fa-university"></i> Data Kios
+                    </a>
+					<a href="<?= base_url('manager/views/pasarbaru') ?>" class="btn btn-app">
+                        <span class="badge bg-<?= $this->session->userdata('skin') ?>"><?= $this->db->where('level', 'pedagang')->get('tb_user')->num_rows() ?></span>
+                        <i class="fa fa-university"></i> Pasar Baru
+                    </a>
+					<a href="<?= base_url('manager/views/lantaisatu') ?>" class="btn btn-app">
+                        <span class="badge bg-<?= $this->session->userdata('skin') ?>"><?= $this->db->where('level', 'pedagang')->get('tb_user')->num_rows() ?></span>
+                        <i class="fa fa-university"></i> Lantai Satu
+                    </a>
+                <?php } ?>
+            </div>
+                <?php endif; ?>
+
+                <!-- DENAH KONTEN MULAI DI SINI -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                <style>
+                    /* === PERUBAHAN DI SINI === */
+                    .denah-container { border: 2px solid #333; padding: 20px; background-color: #fff; max-width: 1050px; /* Dikecilkan */ margin: 20px auto; font-family: Arial, sans-serif; overflow-x: auto; }
+                    .kios { 
+                        border: 1px solid #000; 
+                        width: 35px; /* Dikecilkan dari 40px */
+                        height: 28px; /* Dikecilkan dari 30px */
+                        font-size: 0.75rem; /* Disesuaikan */
+                        display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; 
+                    }
+                    .kios:hover { transform: scale(1.1); box-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 10; }
+                    .kios-besar { border: 1px solid #000; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: bold; }
+                    .berisi { background-color: #ffc107; color: black; }
+                    .kosong { background-color: #fff; color: #333; }
+                    .divider { border-bottom: 2px dashed #6c757d; margin: 30px 0; }
+                    .legenda-item { display: flex; align-items: center; gap: 10px; }
+                    .kios-group { display: flex; }
+                </style>
+
+                <div class="denah-container">
+                    <h2 class="text-center fw-bold mb-4" style="text-decoration: underline;">DENAH LANTAI DASAR</h2>
+                    
+                    <!-- BAGIAN ATAS: BPR & BNI (INTERAKTIF) -->
+                    <div class="d-flex justify-content-between flex-wrap">
+                        <!-- Kolom Kiri: BPR -->
+                        <div class="d-flex mb-3">
+                             <div class="d-flex align-items-end me-1">
+                                <div class="kios kosong" data-nomor="17" data-status="Kosong">17</div>
+                                <div class="kios berisi" data-nomor="16" data-status="Berisi" data-penyewa="Toko Kelontong Pak Budi">16</div>
+                                <div class="kios berisi" data-nomor="15" data-status="Berisi" data-penyewa="Warung Makan Bu Ani">15</div>
+                            </div>
+                            <div class="d-flex">
+                                <div class="d-flex flex-column">
+                                    <div class="kios-besar berisi" style="width: 108px; height: 116px;">BPR</div> <!-- Ukuran disesuaikan -->
+                                    <div class="d-flex mt-1">
+                                        <div class="kios berisi" data-nomor="14" data-status="Berisi" data-penyewa="Jasa Fotokopi">14</div>
+                                        <div class="kios berisi" data-nomor="13" data-status="Berisi" data-penyewa="Toko Pakaian Anak">13</div>
+                                        <div class="kios berisi" data-nomor="12" data-status="Berisi" data-penyewa="Toko Emas Jaya">12</div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-column ms-1">
+                                    <div class="kios berisi" data-nomor="4" data-status="Berisi">4</div><div class="kios berisi" data-nomor="5" data-status="Berisi">5</div>
+                                    <div class="kios berisi" data-nomor="6" data-status="Berisi">6</div><div class="kios berisi" data-nomor="7" data-status="Berisi">7</div>
+                                    <div class="kios berisi" data-nomor="8" data-status="Berisi">8</div><div class="kios berisi" data-nomor="9" data-status="Berisi">9</div>
+                                    <div class="kios berisi" data-nomor="10" data-status="Berisi">10</div><div class="kios berisi" data-nomor="11" data-status="Berisi">11</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kolom Kanan: BNI -->
+                        <div class="d-flex flex-column align-items-end mb-3">
+                            <div class="d-flex"><div class="kios berisi" data-nomor="3" data-status="Berisi">3</div><div class="kios berisi" data-nomor="2" data-status="Berisi">2</div><div class="kios berisi" data-nomor="1" data-status="Berisi">1</div></div>
+                            <div class="d-flex mt-1"><div class="kios-besar berisi" style="width: 144px; height: 86px;">BNI</div></div> <!-- Ukuran disesuaikan -->
+                             <div class="d-flex flex-column mt-1">
+                                <div class="d-flex"><div class="kios berisi" data-nomor="20" data-status="Berisi">20</div><div class="kios kosong" data-nomor="19" data-status="Kosong">19</div><div class="kios berisi" data-nomor="18" data-status="Berisi">18</div></div>
+                                <div class="d-flex mt-1"><div class="kios berisi" data-nomor="21" data-status="Berisi">21</div><div class="kios berisi" data-nomor="22" data-status="Berisi">22</div><div class="kios kosong" data-nomor="23" data-status="Kosong">23</div><div class="kios kosong" data-nomor="24" data-status="Kosong">24</div><div class="kios kosong" data-nomor="25" data-status="Kosong">25</div><div class="kios berisi" data-nomor="26" data-status="Berisi">26</div><div class="kios berisi" data-nomor="27" data-status="Berisi">27</div><div class="kios berisi" data-nomor="28" data-status="Berisi">28</div></div>
+                                <div class="d-flex mt-1"><div class="kios berisi" data-nomor="36" data-status="Berisi">36</div><div class="kios berisi" data-nomor="35" data-status="Berisi">35</div><div class="kios berisi" data-nomor="34" data-status="Berisi">34</div><div class="kios berisi" data-nomor="33" data-status="Berisi">33</div><div class="kios berisi" data-nomor="32" data-status="Berisi">32</div><div class="kios berisi" data-nomor="31" data-status="Berisi">31</div><div class="kios berisi" data-nomor="30" data-status="Berisi">30</div><div class="kios berisi" data-nomor="29" data-status="Berisi">29</div></div>
+                                <div class="d-flex mt-1"><div class="kios berisi" data-nomor="37" data-status="Berisi">37</div><div class="kios berisi" data-nomor="38" data-status="Berisi">38</div><div class="kios berisi" data-nomor="39" data-status="Berisi">39</div><div class="kios berisi" data-nomor="40" data-status="Berisi">40</div><div class="kios berisi" data-nomor="41" data-status="Berisi">41</div><div class="kios berisi" data-nomor="42" data-status="Berisi">42</div><div class="kios berisi" data-nomor="43" data-status="Berisi">43</div><div class="kios berisi" data-nomor="44" data-status="Berisi">44</div></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="divider"></div>
+
+                    <!-- BAGIAN BAWAH: GRID KIOS -->
+                    <div class="d-flex flex-column align-items-center gap-2"> <!-- Jarak antar baris utama dikecilkan -->
+                        <!-- Baris 1 -->
+                        <div class="d-flex justify-content-center gap-4"> <!-- Jarak antar kolom dikecilkan -->
+                            <div class="kios-group"><div class="kios berisi" data-nomor="B1-A1"></div><div class="kios berisi" data-nomor="B1-A2"></div><div class="kios berisi" data-nomor="B1-A3"></div><div class="kios berisi" data-nomor="B1-A4"></div></div>
+                            <div class="kios-group"><div class="kios berisi" data-nomor="C1-A1"></div><div class="kios berisi" data-nomor="C1-A2"></div><div class="kios berisi" data-nomor="C1-A3"></div><div class="kios berisi" data-nomor="C1-A4"></div></div>
+                            <div class="kios-group"><div class="kios berisi" data-nomor="D1-A1"></div><div class="kios berisi" data-nomor="D1-A2"></div><div class="kios berisi" data-nomor="D1-A3"></div><div class="kios berisi" data-nomor="D1-A4"></div></div>
+                            <div class="d-flex gap-1">
+                                <div class="kios-group"><div class="kios berisi" data-nomor="E1-A1"></div><div class="kios berisi" data-nomor="E1-A2"></div></div>
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios kosong" data-nomor="F1-A1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F1-A2" data-status="Kosong"></div></div><div class="kios-group"><div class="kios kosong" data-nomor="F1-B1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F1-B2" data-status="Kosong"></div></div></div>
+                            </div>
+                        </div>
+                        <!-- Baris 2 -->
+                        <div class="d-flex justify-content-center gap-4">
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="B2-A1"></div><div class="kios berisi" data-nomor="B2-A2"></div><div class="kios berisi" data-nomor="B2-A3"></div><div class="kios berisi" data-nomor="B2-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="B2-B1"></div><div class="kios berisi" data-nomor="B2-B2"></div><div class="kios berisi" data-nomor="B2-B3"></div><div class="kios berisi" data-nomor="B2-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="C2-A1"></div><div class="kios berisi" data-nomor="C2-A2"></div><div class="kios berisi" data-nomor="C2-A3"></div><div class="kios berisi" data-nomor="C2-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="C2-B1"></div><div class="kios berisi" data-nomor="C2-B2"></div><div class="kios berisi" data-nomor="C2-B3"></div><div class="kios berisi" data-nomor="C2-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="D2-A1"></div><div class="kios berisi" data-nomor="D2-A2"></div><div class="kios berisi" data-nomor="D2-A3"></div><div class="kios berisi" data-nomor="D2-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="D2-B1"></div><div class="kios berisi" data-nomor="D2-B2"></div><div class="kios berisi" data-nomor="D2-B3"></div><div class="kios berisi" data-nomor="D2-B4"></div></div></div>
+                            <div class="d-flex gap-1">
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="E2-A1"></div><div class="kios berisi" data-nomor="E2-A2"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="E2-B1"></div><div class="kios berisi" data-nomor="E2-B2"></div></div></div>
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios kosong" data-nomor="F2-A1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F2-A2" data-status="Kosong"></div></div><div class="kios-group"><div class="kios kosong" data-nomor="F2-B1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F2-B2" data-status="Kosong"></div></div></div>
+                            </div>
+                        </div>
+                        <!-- Baris 3 -->
+                        <div class="d-flex justify-content-center gap-4">
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="B3-A1"></div><div class="kios berisi" data-nomor="B3-A2"></div><div class="kios berisi" data-nomor="B3-A3"></div><div class="kios berisi" data-nomor="B3-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="B3-B1"></div><div class="kios berisi" data-nomor="B3-B2"></div><div class="kios berisi" data-nomor="B3-B3"></div><div class="kios berisi" data-nomor="B3-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="C3-A1"></div><div class="kios berisi" data-nomor="C3-A2"></div><div class="kios berisi" data-nomor="C3-A3"></div><div class="kios berisi" data-nomor="C3-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="C3-B1"></div><div class="kios berisi" data-nomor="C3-B2"></div><div class="kios berisi" data-nomor="C3-B3"></div><div class="kios berisi" data-nomor="C3-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="D3-A1"></div><div class="kios berisi" data-nomor="D3-A2"></div><div class="kios berisi" data-nomor="D3-A3"></div><div class="kios berisi" data-nomor="D3-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="D3-B1"></div><div class="kios berisi" data-nomor="D3-B2"></div><div class="kios berisi" data-nomor="D3-B3"></div><div class="kios berisi" data-nomor="D3-B4"></div></div></div>
+                            <div class="d-flex gap-1">
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="E3-A1"></div><div class="kios berisi" data-nomor="E3-A2"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="E3-B1"></div><div class="kios berisi" data-nomor="E3-B2"></div></div></div>
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios kosong" data-nomor="F3-A1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F3-A2" data-status="Kosong"></div></div><div class="kios-group"><div class="kios kosong" data-nomor="F3-B1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F3-B2" data-status="Kosong"></div></div></div>
+                            </div>
+                        </div>
+                         <!-- Baris 4 -->
+                         <div class="d-flex justify-content-center gap-4">
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="B4-A1"></div><div class="kios berisi" data-nomor="B4-A2"></div><div class="kios berisi" data-nomor="B4-A3"></div><div class="kios berisi" data-nomor="B4-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="B4-B1"></div><div class="kios berisi" data-nomor="B4-B2"></div><div class="kios berisi" data-nomor="B4-B3"></div><div class="kios berisi" data-nomor="B4-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="C4-A1"></div><div class="kios berisi" data-nomor="C4-A2"></div><div class="kios berisi" data-nomor="C4-A3"></div><div class="kios berisi" data-nomor="C4-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="C4-B1"></div><div class="kios berisi" data-nomor="C4-B2"></div><div class="kios berisi" data-nomor="C4-B3"></div><div class="kios berisi" data-nomor="C4-B4"></div></div></div>
+                            <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="D4-A1"></div><div class="kios berisi" data-nomor="D4-A2"></div><div class="kios berisi" data-nomor="D4-A3"></div><div class="kios berisi" data-nomor="D4-A4"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="D4-B1"></div><div class="kios berisi" data-nomor="D4-B2"></div><div class="kios berisi" data-nomor="D4-B3"></div><div class="kios berisi" data-nomor="D4-B4"></div></div></div>
+                            <div class="d-flex gap-1">
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios berisi" data-nomor="E4-A1"></div><div class="kios berisi" data-nomor="E4-A2"></div></div><div class="kios-group"><div class="kios berisi" data-nomor="E4-B1"></div><div class="kios berisi" data-nomor="E4-B2"></div></div></div>
+                                <div class="d-flex flex-column gap-1"><div class="kios-group"><div class="kios kosong" data-nomor="F4-A1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F4-A2" data-status="Kosong"></div></div><div class="kios-group"><div class="kios kosong" data-nomor="F4-B1" data-status="Kosong"></div><div class="kios kosong" data-nomor="F4-B2" data-status="Kosong"></div></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LEGENDA -->
+                    <div class="mt-4">
+                        <span class="fw-bold">KET :</span>
+                        <div class="d-flex flex-wrap gap-4 mt-2">
+                            <div class="legenda-item"><div class="kios kosong me-2" style="width:25px; height:25px; cursor:default;"></div><span>KIOS KOSONG</span></div>
+                            <div class="legenda-item"><div class="kios berisi me-2" style="width:25px; height:25px; cursor:default;"></div><span>KIOS BERISI</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<!-- /.content-wrapper -->
+
+<!-- Modal untuk Detail Kios (SAMA, TIDAK ADA PERUBAHAN) -->
+<div class="modal fade" id="kiosModal" tabindex="-1" aria-labelledby="kiosModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="kiosModalLabel">Detail Kios</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="kiosModalBody"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Bagian ini biasanya ada di file template (footer.php) -->
+<!-- </div> --><!-- ./wrapper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// SCRIPT JUGA SAMA, TIDAK ADA PERUBAHAN
+document.addEventListener('DOMContentLoaded', function () {
+    const kiosModalElement = document.getElementById('kiosModal');
+    if (!kiosModalElement) return;
+
+    const kiosModal = new bootstrap.Modal(kiosModalElement);
+    const kiosModalLabel = document.getElementById('kiosModalLabel');
+    const kiosModalBody = document.getElementById('kiosModalBody');
+    const modalFooter = kiosModalElement.querySelector('.modal-footer');
+
+    document.querySelectorAll('.kios').forEach(kios => {
+        const status = kios.dataset.status || 'Berisi';
+        kios.addEventListener('click', function () {
+            const nomor = kios.dataset.nomor || 'Tidak Bernomor';
+            const penyewa = kios.dataset.penyewa || 'Informasi tidak tersedia';
+
+            kiosModalLabel.textContent = `Detail Kios: ${nomor}`;
+
+            const oldSewaButton = modalFooter.querySelector('#tombolSewa');
+            if(oldSewaButton) { oldSewaButton.remove(); }
+
+            if (status === 'Kosong') {
+                kiosModalBody.innerHTML = `<p><strong>Nomor Kios:</strong> ${nomor}</p><p><strong>Status:</strong> <span class="badge bg-success">Tersedia</span></p><p>Kios ini siap untuk disewa. Klik tombol di bawah untuk melanjutkan.</p>`;
+                const sewaButton = document.createElement('a');
+                sewaButton.href = `<?= base_url('sewa/form/') ?>${nomor}`;
+                sewaButton.className = 'btn btn-primary';
+                sewaButton.id = 'tombolSewa';
+                sewaButton.textContent = 'Sewa Kios Ini';
+                modalFooter.appendChild(sewaButton);
+            } else {
+                kiosModalBody.innerHTML = `<p><strong>Nomor Kios:</strong> ${nomor}</p><p><strong>Status:</strong> <span class="badge bg-danger">Terisi</span></p><p><strong>Disewa oleh:</strong> ${penyewa}</p>`;
+            }
+            kiosModal.show();
+        });
+    });
+});
+</script>
+
+</body>
+</div>
+</section>
+</html>

@@ -1,0 +1,68 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class daftarkios extends CI_Controller {
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->library('licensing');
+        $this->licensing->check_license();
+		
+		//Get Zona Waktu
+        foreach ($this->db->get('tb_aplikasi')->result() as $timezone) {
+            date_default_timezone_set($timezone->timezone);
+        }
+
+		if(!$this->session->userdata('level')){
+			$this->session->set_flashdata('pesan', 'Anda harus masuk terlebih dahulu!');
+			redirect('home');
+		}
+	}
+
+	public function index()
+	{
+		public function index()
+{
+    $jenis = $this->input->get('jenis');
+    $status = $this->input->get('status');
+
+    $this->db->select('*');
+    $this->db->from('kios');
+
+    if ($jenis && $jenis != 'all') {
+        $this->db->where('jKios', $jenis);
+    }
+
+    if ($status && $status != 'all') {
+        if ($status == 'tersedia') {
+            $this->db->where('penyewa', NULL);
+        } elseif ($status == 'disewa') {
+            $this->db->where('penyewa !=', NULL);
+        }
+    }
+
+    $data['Kios'] = $this->db->get();
+    $data['jenisList'] = $this->db->select('jKios')->distinct()->get('kios')->result();
+
+    $this->load->view('kios/index', $data); // ganti dengan nama view kamu
+}
+
+		$data['title']		= 'Data Kios';
+		$data['subtitle']	= 'Menampilkan semua data Kios';
+
+		$data['collapse']	= 'No';
+
+		$this->db->where('level', 'Nasabah');
+		$data['nasabah']	= $this->m_model->get_desc('tb_user');
+		if($this->session->userdata('level') == 'Nasabah') {
+			$this->db->where('idKios', $this->session->userdata('id'));
+		}
+		$data['Kios']		= $this->m_model->get_desc('tb_kios');
+		
+		$this->load->view('admin/templates/header', $data);
+		$this->load->view('admin/templates/sidebar');
+		$this->load->view('admin/daftarkios');
+		$this->load->view('admin/templates/footer');
+    }
+}

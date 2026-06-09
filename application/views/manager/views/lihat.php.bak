@@ -1,0 +1,23 @@
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <?= $title ?>
+            <small><?= $content ?></small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="<?= base_url('admin/dashboard') ?>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active"><?= $title ?></li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="produk-grid">
+			<?php foreach ($content as $p): ?>
+				<div class="produk-item">
+					<img src="<?= base_url('assets/uploads/' . $p['gambar']) ?>" alt="<?= esc($p['gambar']) ?>">
+					<h3><?= esc($p['gambar']) ?></h3>
+					<p>Rp<?= number_format($p['harga'], 0, ',', '.') ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+    </section>
+</div>

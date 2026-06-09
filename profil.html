@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil - Pasar Modern Jaya Selalu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigasi / Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="Homednms">
+                <img src="assets/kios/logo-pasar.png" alt="Logo Pasar Modern" width="30" class="d-inline-block align-text-top me-2">
+                Pasar Modern
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="Homednms">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profil.html">Profil</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="berita.html">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link" href="galeri.html">Galeri</a></li>
+                    <li class="nav-item"><a class="nav-link" href="pasar">Kios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="home">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <main class="container my-5">
+        <h1 class="section-title text-center mb-5">Profil Pasar Modern</h1>
+
+        <!-- 1. Bagian Visi & Misi -->
+        <!-- Data ini akan diambil dari tabel 'profile' -->
+        <section id="visi-misi" class="mb-5 p-4 bg-light rounded-3">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h3>Visi</h3>
+                    <p>Menjadi pasar modern percontohan yang bersih, nyaman, dan menjadi pusat ekonomi kerakyatan di tingkat lokal.</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Misi</h3>
+                    <ol>
+                        <li>Menyediakan produk segar dan berkualitas dengan harga terjangkau.</li>
+                        <li>Memberikan pelayanan terbaik kepada konsumen dan pedagang.</li>
+                        <li>Menjaga kebersihan dan kenyamanan area pasar secara konsisten.</li>
+                        <li>Mengembangkan program pemberdayaan untuk para pedagang lokal.</li>
+                    </ol>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Bagian Sejarah -->
+        <!-- Data ini akan diambil dari tabel 'profile' -->
+        <section id="sejarah" class="mb-5">
+            <h2 class="text-center mb-4">Sejarah Singkat</h2>
+            <p class="text-center col-lg-8 mx-auto">
+                Pasar Modern ini didirikan pada tahun 2020 sebagai bagian dari program revitalisasi pasar tradisional oleh pemerintah daerah. Dibangun di atas lahan seluas 2 hektar, pasar ini dirancang untuk menampung lebih dari 500 pedagang dengan fasilitas yang modern dan higienis. Sejak awal berdirinya, kami terus berinovasi untuk memberikan pengalaman berbelanja terbaik bagi seluruh masyarakat.
+            </p>
+        </section>
+
+        <!-- 3. Bagian Struktur Organisasi -->
+        <!-- Data ini akan diambil dari tabel 'organization' -->
+        <section id="struktur-organisasi" class="mb-5">
+            <h2 class="section-title text-center mb-4">Struktur Organisasi</h2>
+            <div class="row g-4 justify-content-center text-center">
+                <div class="col-md-4 col-lg-3">
+                    <div class="card org-card h-100">
+                        <img src="assets/kios/kepala.jpg" class="card-img-top" alt="Kepala Pasar">
+                        <div class="card-body">
+                            <h5 class="card-title">Budi Santoso</h5>
+                            <p class="card-text text-muted">Kepala Pasar</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card org-card h-100">
+                        <img src="assets/kios/manager.jpg" class="card-img-top" alt="Manajer Operasional">
+                        <div class="card-body">
+                            <h5 class="card-title">Citra Lestari</h5>
+                            <p class="card-text text-muted">Manajer Operasional</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 col-lg-3">
+                    <div class="card org-card h-100">
+                        <img src="assets/kios/staf.jpg" class="card-img-top" alt="Staf Keamanan">
+                        <div class="card-body">
+                            <h5 class="card-title">Agus Wijaya</h5>
+                            <p class="card-text text-muted">Staf Keamanan & Kebersihan</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Footer (Sama seperti di index.html) -->
+    <footer class="bg-dark text-white pt-5 pb-4">
+        <!-- Salin kode footer dari index.html ke sini -->
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

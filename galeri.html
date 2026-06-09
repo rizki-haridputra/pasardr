@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri - Pasar Modern Jaya Selalu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigasi / Header -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="Homednms">
+                <img src="assets/kios/logo-pasar.png" alt="Logo Pasar Modern" width="30" class="d-inline-block align-text-top me-2">
+                Pasar Modern
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="Homednms">Beranda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profil.html">Profil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="berita.html">Berita</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="galeri.html">Galeri</a></li>
+                    <li class="nav-item"><a class="nav-link" href="pasar">Kios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="Home">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <h1 class="section-title text-center mb-5">Galeri Foto</h1>
+        
+        <!-- Siapkan gambar-gambar di folder assets/kios/ -->
+        <div class="row g-4">
+            <!-- Gambar 1 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/spasar.jpg">
+                        <img src="assets/kios/spasar.jpg" class="img-fluid rounded shadow-sm" alt="Suasana Pasar">
+                    </a>
+                </div>
+            </div>
+            <!-- Gambar 2 -->
+            <div class="col-lg-4 col-md-6">
+                 <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/lsayur.jpg">
+                        <img src="assets/kios/lsayur.jpg" class="img-fluid rounded shadow-sm" alt="Lorong Sayur">
+                    </a>
+                </div>
+            </div>
+            <!-- Gambar 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/tdaging.jpg">
+                        <img src="assets/kios/tdaging.jpg" class="img-fluid rounded shadow-sm" alt="Toko Daging">
+                    </a>
+                </div>
+            </div>
+            <!-- Gambar 4 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/fcourt.jpg">
+                        <img src="assets/kios/fcourt.jpg" class="img-fluid rounded shadow-sm" alt="Food Court">
+                    </a>
+                </div>
+            </div>
+            <!-- Gambar 5 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/aparkir.jpg">
+                        <img src="assets/kios/aparkir.jpg" class="img-fluid rounded shadow-sm" alt="Area Parkir">
+                    </a>
+                </div>
+            </div>
+            <!-- Gambar 6 -->
+            <div class="col-lg-4 col-md-6">
+                 <div class="gallery-item">
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#galleryModal" data-img-src="assets/kios/pramah.jpg">
+                        <img src="assets/kios/pramah.jpg" class="img-fluid rounded shadow-sm" alt="Penjual Ramah">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal untuk menampilkan gambar -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="" id="modalImage" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 mt-5">
+        <!-- Salin kode footer dari index.html ke sini -->
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript kustom untuk Galeri -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const galleryModal = document.getElementById('galleryModal');
+            galleryModal.addEventListener('show.bs.modal', function (event) {
+                // Tombol/link yang memicu modal
+                const triggerElement = event.relatedTarget;
+                // Ambil URL gambar dari atribut data-img-src
+                const imageSrc = triggerElement.getAttribute('data-img-src');
+                // Cari elemen <img> di dalam modal
+                const modalImage = galleryModal.querySelector('#modalImage');
+                // Atur src dari elemen <img> tersebut
+                modalImage.src = imageSrc;
+            });
+        });
+    </script>
+</body>
+</html>

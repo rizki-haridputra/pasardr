@@ -1,0 +1,197 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Home extends CI_Controller {
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->library(['licensing', 'login_attempt']);
+        $this->licensing->check_license();
+
+        // Set timezone dari database tb_aplikasi
+        $timezone = $this->db->get('tb_aplikasi')->row();
+        if ($timezone) {
+            date_default_timezone_set($timezone->timezone);
+        }
+    }
+
+    public function index()
+    {
+        $level = $this->session->userdata('level');
+        if (in_array($level, ['Administrator', 'Admin'])) {
+            redirect('admin/dashboard');
+            return;
+        }
+        else if (in_array($level, ['Pedagang', 'Pedagang'])) {
+            redirect('pedagang/dashboard');
+            return;
+        }
+
+        $digit1 = mt_rand(1, 20);
+        $digit2 = mt_rand(1, 20);
+
+        // Simpan hasil captcha di session
+        $this->session->set_userdata('captcha', $digit1 + $digit2);
+
+        $data = [
+            'title'    => 'Login',
+            'captcha'  => "$digit1 + $digit2 = ?",
+            'aplikasi' => $this->m_model->get_desc('tb_aplikasi'),
+        ];
+
+        $this->load->view('login', $data);
+    }
+
+    public function auth()
+    {
+        $username = $this->input->post('username', true);
+        $password = $this->input->post('password', true);
+        $jawaban  = $this->input->post('jawaban', true);
+
+        if (empty($jawaban)) {
+            $this->session->set_flashdata('pesan', 'Captcha harap diisi!');
+            redirect('home');
+            return;
+        }
+
+        if ($jawaban != $this->session->userdata('captcha')) {
+            $this->session->set_flashdata('pesan', 'Hitung dengan benar!');
+            redirect('home');
+            return;
+        }
+
+        $user = $this->m_model->get_where(['username' => $username], 'tb_user');
+
+        if ($user->num_rows() === 0) {
+            $this->session->set_flashdata('pesan', 'Username tidak ditemukan!');
+            redirect('home');
+            return;
+        }
+
+        if ($this->login_attempt->is_max_login_attempts_exceeded($username)) {
+            $this->session->set_flashdata('pesan', 'Kesempatan login sudah habis, silahkan coba lagi nanti!');
+            redirect('home');
+            return;
+        }
+
+        $row = $user->row_array();
+
+        if (!password_verify($password, $row['password'])) {
+            $this->login_attempt->increment_login_attempts($username);
+            $this->session->set_flashdata('pesan', 'Password anda salah!');
+            redirect('home');
+            return;
+        }
+
+        if ($row['login'] !== 'Ya') {
+            $this->session->set_flashdata('pesan', 'Tidak ada akses login, silahkan hubungi administrator!');
+            redirect('home');
+            return;
+        }
+
+        // Siapkan data session user (hindari simpan password)
+        $sessionData = [
+            'id'           => $row['id'], 
+            'nama'         => $row['nama'],  
+            'jenisKelamin' => $row['jenisKelamin'],
+            'tptLahir'     => $row['tptLahir'],
+            'tglLahir'     => $row['tglLahir'],
+            'telp'         => $row['telp'],   
+            'email'        => $row['email'],
+            'login'        => $row['login'],
+            'alamat'       => $row['alamat'],
+            'username'     => $row['username'],
+            'skin'         => $row['skin'],
+            'level'        => $row['level'],
+            'foto'         => $row['foto'],
+            'terdaftar'    => $row['terdaftar'],
+            'start_time'   => date('Y-m-d H:i:s'),
+        ];
+        $this->session->set_userdata($sessionData);
+
+        // Log aktivitas login
+        $this->m_model->insert([
+            'idUser'    => $row['id'],
+            'status'    => 'Login',
+            'ipAddress' => $this->input->ip_address(),
+            'device'    => $_SERVER['HTTP_USER_AGENT'],
+            'terdaftar' => date('Y-m-d H:i:s'),
+        ], 'tb_log');
+
+        $this->login_attempt->reset_login_attempts($username);
+
+        redirect('admin/dashboard');
+    }
+	
+	public function daftar_aksi()
+{
+    $nama       = $this->input->post('nama');
+    $username   = $this->input->post('username');
+    $email      = $this->input->post('email');
+    $password   = $this->input->post('password');
+    $password2  = $this->input->post('password2');
+    $jawaban    = $this->input->post('jawaban');
+
+    // Cek captcha
+    if($jawaban != $this->session->userdata('captcha')) {
+        $this->session->set_flashdata('pesan', 'Jawaban captcha salah!');
+        redirect('home');
+        return;
+    }
+
+    // Cek password konfirmasi
+    if($password !== $password2) {
+        $this->session->set_flashdata('pesan', 'Password dan konfirmasi tidak cocok!');
+        redirect('home');
+        return;
+    }
+
+    // Upload foto
+    $config['upload_path']      = './assets/foto/';
+    $config['allowed_types']    = 'gif|jpg|png|jpeg';
+    $config['max_size']         = 2048;
+    $config['encrypt_name']     = TRUE;
+
+    $this->load->library('upload', $config);
+
+    if (!$this->upload->do_upload('foto')) {
+        $this->session->set_flashdata('pesan', 'Gagal upload foto: ' . $this->upload->display_errors());
+        redirect('home');
+    } else {
+        $upload = $this->upload->data();
+        $foto   = $upload['file_name'];
+
+        $data = array(
+            'nama'      => $nama,
+            'username'  => $username,
+            'email'     => $email,
+            'password'  => password_hash($password, PASSWORD_BCRYPT),
+            'foto'      => $foto,
+            // 'level'     => 'Nasabah',
+            'login'     => 'Ya',
+            'terdaftar' => date('Y-m-d H:i:s')
+        );
+
+        $this->m_model->insert($data, 'tb_user');
+
+        $this->session->set_flashdata('pesan', '! Silakan login.');
+        redirect('home');
+    }
+}
+
+
+    public function logout()
+    {
+        $this->m_model->insert([
+            'idUser'    => $this->session->userdata('id'),
+            'status'    => 'Logout',
+            'ipAddress' => $this->input->ip_address(),
+            'device'    => $_SERVER['HTTP_USER_AGENT'],
+            'terdaftar' => date('Y-m-d H:i:s'),
+        ], 'tb_log');
+
+        $this->session->sess_destroy();
+        redirect('home');
+    }
+}

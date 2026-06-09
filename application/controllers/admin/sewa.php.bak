@@ -1,0 +1,128 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class sewa extends CI_Controller {
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->load->library('licensing');
+        $this->licensing->check_license();
+		
+		//Get Zona Waktu
+        foreach ($this->db->get('tb_aplikasi')->result() as $timezone) {
+            date_default_timezone_set($timezone->timezone);
+        }
+
+		if(!$this->session->userdata('level')){
+			$this->session->set_flashdata('pesan', 'Anda harus masuk terlebih dahulu!');
+			redirect('home');
+		}
+	}
+
+	public function index()
+	{
+		$data['title']		= 'Data sewa';
+		$data['subtitle']	= 'Menampilkan semua data sewa';
+
+		$data['collapse']	= 'No';
+
+		$this->db->where('level', 'Nasabah');
+		$data['nasabah']	= $this->m_model->get_desc('tb_user');
+		if($this->session->userdata('level') == 'Nasabah') {
+			$this->db->where('idNasabah', $this->session->userdata('id'));
+		}
+		$data['sewa']		= $this->m_model->get_desc('tb_sewa');
+		
+		$this->load->view('admin/templates/header', $data);
+		$this->load->view('admin/templates/sidebar');
+		$this->load->view('admin/sewa');
+		$this->load->view('admin/templates/footer');
+    }
+
+	public function insert()
+{
+    // Ambil data dari form
+    $idNasabah  = $this->input->post('idNasabah');
+    $idKios = $this->input->post('idKios');
+    $harga      = $this->input->post('harga');
+    $tanggal    = $this->input->post('tanggal');
+    $status     = $this->input->post('status');
+
+    // Simpan data sewa dulu
+    $datasewa = [
+        'idNasabah' => $idNasabah,
+        'idKios' => $idKios,
+        'harga' => $harga,
+        'tanggal' => $tanggal,
+        'status' => $status,
+        'idSewa' => 'KRD-' . time()
+    ];
+
+    $this->db->insert('tb_sewa', $datasewa);
+    $idsewa = $this->db->insert_id();
+
+    // Hitung berapa bulan tersisa dari tanggal ke akhir tahun
+    $bulanMulai = (int)date('m', strtotime($tanggal));
+    $tahunMulai = (int)date('Y', strtotime($tanggal));
+    $jumlahBulan = 12 - $bulanMulai + 1;
+
+    // Hitung angsuran per bulan
+    $angsuranPerBulan = $harga / $jumlahBulan;
+
+    // Simpan data angsuran tiap bulan ke tb_angsuran
+    for ($i = 0; $i < $jumlahBulan; $i++) {
+        $bulan = $bulanMulai + $i;
+        $tahun = $tahunMulai;
+        if ($bulan > 12) {
+            $bulan -= 12;
+            $tahun += 1;
+        }
+
+        $tanggalAngsuran = date('Y-m-d', strtotime("$tahun-$bulan-01"));
+
+        $this->db->insert('tb_angsuran', [
+            'idsewa' => $idsewa,
+            'tanggal' => $tanggalAngsuran,
+            'nominal' => $angsuranPerBulan,
+            'status' => 'Belum Lunas'
+        ]);
+    }
+
+    $this->session->set_flashdata('success', 'Data sewa dan angsuran berhasil disimpan!');
+    redirect('admin/sewa');
+}
+
+
+	public function delete($id)
+	{
+		$where = array('id' => $id);
+
+		$this->m_model->delete($where, 'tb_sewa');
+		$this->session->set_flashdata('pesan', 'Data berhasil dihapus!');
+		redirect('admin/sewa');
+	}
+
+	public function update($id)
+	{
+		$idNasabah		= $_POST['idNasabah'];
+		$idKios		= $_POST['idKios'];
+		$harga			= $_POST['harga'];
+		$status			= $_POST['status'];
+		$tanggal		= $_POST['tanggal'];
+
+		$data = array(
+			'idNasabah' 	=> $idNasabah,
+			'idKios' 		=> $idKios,
+			'harga' 		=> $harga,
+			'tanggal' 		=> $tanggal,
+			'status' 		=> $status
+		);
+
+		$where = array('id' => $id);
+
+		$this->m_model->update($where, $data, 'tb_sewa');
+		$this->session->set_flashdata('pesan', 'Data berhasil diubah!');
+		redirect('admin/sewa');
+	}
+}

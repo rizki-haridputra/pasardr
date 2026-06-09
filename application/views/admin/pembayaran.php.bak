@@ -1,0 +1,203 @@
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            <?= $title ?>
+            <small><?= $subtitle ?></small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="<?= base_url('admin/dashboard') ?>"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+            <li class="active"><?= $title ?></li>
+        </ol>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="box">
+                    <div class="box-header">
+                        <button class="btn btn-primary" onclick="history.back(-1)">
+                            <div class="fa fa-arrow-left"></div> Kembali
+                        </button>
+                    </div>
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped">
+                                <?php foreach ($sewa->result_array() as $row) { ?>
+                                    <tr>
+                                        <td>No sewa</td>
+                                        <td>:</td>
+                                        <td><?= $row['idSewa'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nasabah</td>
+                                        <td>:</td>
+                                        <td><?= $this->db->where('id', $row['idPedagang'])->get('tb_user')->row('nama') ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nama Barang</td>
+                                        <td>:</td>
+                                        <td><?= $row['idKios'] ?></td>
+                                    </tr> 
+                                    <tr>
+                                        <td>Harga</td>
+                                        <td>:</td>
+                                        <td><?= 'Rp. ' . number_format($row['harga'],0,',','.') ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Tanggal</td>
+                                        <td>:</td>
+                                        <td><?= date('d F Y', strtotime($row['tanggal'])) ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total Pembayaran</td>
+                                        <td>:</td>
+                                        <td>
+                                            <?php
+                                                $this->db->select('SUM(nominal) AS totalPembayaran');
+                                                $this->db->where('idSewa', $idSewa);
+                                                foreach ($this->db->get('tb_angsuran')->result() as $tPem) {
+                                                    echo 'Rp. ' . number_format($tPem->totalPembayaran,0,',','.');
+                                                }
+                                            ?>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sisa Pembayaran</td>
+                                        <td>:</td>
+                                        <td><?= 'Rp. ' . number_format($row['harga']-$tPem->totalPembayaran,0,',','.') ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        <td>:</td>
+                                        <td><div class="label label-<?= ($row['status'] == 'Lunas') ? 'success' : 'danger' ?>"><?= $row['status'] ?></div></td>
+                                    </tr>
+                                <?php } ?>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="box">
+                    <?php if($this->session->userdata('level') == 'Administrator') { ?>
+                        <div class="box-header">
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#tambahData">
+                                <div class="fa fa-plus"></div> Tambah Data
+                            </button>
+                            <a href="<?= base_url('admin/angsuran/cetakpembayaran/').$idSewa ?>" class="btn btn-warning" target="blank">
+                                <div class="fa fa-print"></div> Cetak Data
+                            </a>
+                        </div>
+                    <?php } ?>
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped table-hover dataTable">
+                                <thead>
+                                    <tr>
+                                        <th width="10px">#</th>
+                                        <th>Tanggal</th>
+                                        <th>Nominal</th>
+                                        <th>Keterangan</th>
+                                        <?php if($this->session->userdata('level') == 'Administrator') { ?>
+                                            <th>Aksi</th>
+                                        <?php } ?>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        $no = 1;
+                                        foreach ($angsuran->result() as $ang) {
+                                    ?>
+                                        <tr>
+                                            <td><?= $no++ ?></td>
+                                            <td><?= date('d F Y', strtotime($ang->tanggal)) ?></td>
+                                            <td><?= 'Rp. ' . number_format($ang->nominal,0,',','.') ?></td>
+                                            <td><?= $ang->keterangan ?></td>
+                                            <?php if($this->session->userdata('level') == 'Administrator') { ?>
+                                                <td>
+                                                    <button class="btn btn-warning btn-xs" data-toggle="modal" data-target="#editData<?= $ang->id ?>">
+                                                        <div class="fa fa-edit"></div> Edit
+                                                    </button>
+                                                    <a href="<?= base_url('admin/angsuran/delete/').$ang->id.'/'.$idSewa ?>" class="btn btn-danger btn-xs tombol-yakin" data-isidata="Ingin menghapus data ini?">
+                                                        <div class="fa fa-trash"></div> Delete
+                                                    </a>
+                                                </td>
+                                            <?php } ?>
+                                        </tr>
+                                    <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal Tambah Data -->
+<div class="modal fade" id="tambahData" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Tambah <?= $title ?></h4>
+            </div>
+            <form action="<?= base_url('admin/angsuran/insert/').$idSewa ?>" method="POST">
+                <input type="hidden" name="<?= $this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" style="display: none">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="date" name="tanggal" class="form-control" placeholder="Tanggal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nominal</label>
+                        <input type="number" name="nominal" class="form-control" placeholder="Nominal" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan</label>
+                        <input type="text" name="keterangan" class="form-control" placeholder="Keterangan" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-danger"><div class="fa fa-trash"></div> Reset</button>
+                    <button type="submit" class="btn btn-primary"><div class="fa fa-save"></div> Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Edit Data -->
+<?php foreach ($angsuran->result() as $edit) { ?>
+    <div class="modal fade" id="editData<?= $edit->id ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Edit <?= $title ?></h4>
+                </div>
+                <form action="<?= base_url('admin/angsuran/update/').$idSewa.'/'.$edit->id ?>" method="POST">
+                    <input type="hidden" name="<?= $this->security->get_csrf_token_name();?>" value="<?=$this->security->get_csrf_hash();?>" style="display: none">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="date" name="tanggal" class="form-control" placeholder="Tanggal" value="<?= $edit->tanggal ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Nominal</label>
+                            <input type="number" name="nominal" class="form-control" placeholder="Nominal" value="<?= $edit->nominal ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Keterangan</label>
+                            <input type="text" name="keterangan" class="form-control" placeholder="Keterangan" value="<?= $edit->keterangan ?>" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="reset" class="btn btn-danger"><div class="fa fa-trash"></div> Reset</button>
+                        <button type="submit" class="btn btn-primary"><div class="fa fa-save"></div> Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+<?php } ?>

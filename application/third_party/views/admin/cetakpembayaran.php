@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+        <title><?= $title ?></title>
+
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="<?= base_url('assets') ?>/bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <?php
+        foreach ($this->db->get('tb_aplikasi')->result() as $timezone) {
+            date_default_timezone_set($timezone->timezone);
+        }
+    ?>
+    <body>
+        <div class="container">
+            <h3><center><b><?= strtoupper($title) ?></b></center></h3>
+
+            <table>
+                <?php foreach ($sewa->result_array() as $row) { ?>
+                    <tr>
+                        <td width="150px">No sewa</td>
+                        <td width="20px">:</td>
+                        <td><?= $row['idSewa'] ?></td>
+                    </tr>
+                    <tr>
+                        <td>Nasabah</td>
+                        <td>:</td>
+                        <td><?= $this->db->where('id', $row['idNasabah'])->get('tb_user')->row('nama') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Nama Barang</td>
+                        <td>:</td>
+                        <td><?= $row['idKios'] ?></td>
+                    </tr> 
+                    <tr>
+                        <td>Harga</td>
+                        <td>:</td>
+                        <td><?= 'Rp. ' . number_format($row['harga'],0,',','.') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Tanggal</td>
+                        <td>:</td>
+                        <td><?= date('d F Y', strtotime($row['tanggal'])) ?></td>
+                    </tr>
+                    <tr>
+                        <td>Total Pembayaran</td>
+                        <td>:</td>
+                        <td>
+                            <?php
+                                $this->db->select('SUM(nominal) AS totalPembayaran');
+                                $this->db->where('idSewa', $idSewa);
+                                foreach ($this->db->get('tb_angsuran')->result() as $tPem) {
+                                    echo 'Rp. ' . number_format($tPem->totalPembayaran,0,',','.');
+                                }
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sisa Pembayaran</td>
+                        <td>:</td>
+                        <td><?= 'Rp. ' . number_format($row['harga']-$tPem->totalPembayaran,0,',','.') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>:</td>
+                        <td><?= $row['status'] ?></td>
+                    </tr>
+                <?php } ?>
+            </table>
+
+            <br>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th width="10px">#</th>
+                            <th>Tanggal</th>
+                            <th>Nominal</th>
+                            <th>Keterangan</th>
+                            <th>Terdaftar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            $no = 1;
+                            foreach ($angsuran->result() as $ang) {
+                        ?>
+                            <tr>
+                                <td><?= $no++ ?></td>
+                                <td><?= date('d F Y', strtotime($ang->tanggal)) ?></td>
+                                <td><?= 'Rp. ' . number_format($ang->nominal,0,',','.') ?></td>
+                                <td><?= $ang->keterangan ?></td>
+                                <td><?= date('d F Y H:i:s', strtotime($ang->terdaftar)) ?></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+
+            <font style="position: fixed; bottom: 0">
+                <small><i>Dicetak pada <?= date('d F Y H:i:s') ?> Oleh <?= $this->session->userdata('nama') ?>, <?= current_url() ?></i></small>
+            </font>
+        </div>
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="<?= base_url('assets') ?>/bower_components/jquery/dist/jquery.min.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script src="<?= base_url('assets') ?>/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script>
+            window.print();
+        </script>
+    </body>
+</html>
